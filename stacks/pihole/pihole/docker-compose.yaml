@@ -1,0 +1,40 @@
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    hostname: pihole.docker
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 67:67/udp
+      - 9001:80/tcp
+    env_file: .env
+    environment:
+      - TZ=Asia/Manila
+      - WEBPASSWORD=$PIHOLE_PASS
+    volumes:
+      - ./etc-pihole:/etc/pihole
+      - ./etc-dnsmasq.d/:/etc/dnsmasq.d
+        #cap_add:
+        #- NET_ADMIN
+    restart: unless-stopped
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.1.0
+    container_name: node_exporter
+    command: "--path.rootfs=/host"
+    pid: host
+    restart: unless-stopped
+    ports:
+      - 9100:9100
+    volumes:
+      - /:/host:ro,rslave
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    environment:
+      SIGNUPS_ALLOWED: "true"
+    volumes:
+      - ./vw-data:/data
+    ports:
+      - 11001:80
