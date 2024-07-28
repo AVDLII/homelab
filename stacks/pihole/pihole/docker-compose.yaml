@@ -10,7 +10,7 @@ services:
       - 9001:80/tcp
     env_file: .env
     environment:
-      - TZ=Asia/Manila
+      - TZ=$PIHOLE_TZ
       - WEBPASSWORD=$PIHOLE_PASS
     volumes:
       - ./etc-pihole:/etc/pihole
